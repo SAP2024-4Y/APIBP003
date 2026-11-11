@@ -185,10 +185,9 @@
           <execution>
             <goals><goal>generate</goal></goals>
             <configuration>
-              <graphqlSchemas>
-                <rootDir>${project.basedir}</rootDir>
-                <includePattern>docs/schema.graphql</includePattern>
-              </graphqlSchemas>
+              <graphqlSchemaPaths>
+                <graphqlSchemaPath>${project.basedir}/docs/schema.graphql</graphqlSchemaPath>
+              </graphqlSchemaPaths>
               <outputDir>${project.build.directory}/generated-sources/graphql</outputDir>
               <packageName>com.apibp.events.graphql.model</packageName>
               <generateApis>false</generateApis>
