@@ -69,3 +69,39 @@ mvn verify
 curl http://localhost:8080/health
 # → {"status":"ok"}
 ```
+
+## Developer workflow
+
+### Adding a new entity (per PR)
+
+Each PR that introduces a new JPA entity follows this flow:
+
+**1. Write the entity class** under `src/main/java/.../model/`
+
+**2. Generate the DDL automatically:**
+```bash
+mvn -Pgenerate-ddl
+# → writes target/schema.sql based on current JPA entities
+```
+
+**3. Copy the relevant `CREATE TABLE` statement** from `target/schema.sql` into a new Flyway migration:
+```
+src/main/resources/db/migration/V2__add_event.sql   # PR #2 example
+```
+Review the generated SQL, add `IF NOT EXISTS`, tweak constraints as needed, then commit it.
+
+**4. GraphQL types are auto-generated** from `docs/schema.graphql` at build time:
+```bash
+mvn generate-sources
+# → writes Java DTOs to target/generated-sources/graphql/
+```
+Update `docs/schema.graphql` when you add new types, then run the above — the Java types regenerate automatically on every build.
+
+### Migration naming convention
+```
+V1__initial_schema.sql      # PR #1 — app_user only
+V2__add_event.sql           # PR #2 — event, ticket_type
+V3__add_venue.sql           # PR #3 — venue + venue_id FK on event
+V4__add_slot_booking.sql    # PR #4 — event_slot, booking
+```
+Always use `IF NOT EXISTS` so `docker compose down && up` never crashes on existing tables.

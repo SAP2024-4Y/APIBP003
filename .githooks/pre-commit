@@ -1,0 +1,22 @@
+#!/bin/sh
+# Warns if a JPA entity was modified without a matching new Flyway migration.
+# Does NOT block the commit — just reminds the developer.
+
+ENTITY_CHANGED=$(git diff --cached --name-only | grep 'src/main/java/.*/model/.*\.java$')
+MIGRATION_ADDED=$(git diff --cached --name-only | grep 'src/main/resources/db/migration/V.*\.sql$')
+
+if [ -n "$ENTITY_CHANGED" ] && [ -z "$MIGRATION_ADDED" ]; then
+  echo ""
+  echo "ERROR: Entity change detected without a new Flyway migration:"
+  echo "$ENTITY_CHANGED" | sed 's/^/   /'
+  echo ""
+  echo "   Generate DDL and add a migration before committing:"
+  echo "   mvn -Pgenerate-ddl"
+  echo "   -> review target/schema.sql, copy the new CREATE TABLE to"
+  echo "      src/main/resources/db/migration/VN__description.sql"
+  echo "   -> git add the migration, then re-run git commit"
+  echo ""
+  exit 1
+fi
+
+exit 0

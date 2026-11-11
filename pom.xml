@@ -21,6 +21,7 @@
     <jjwt.version>0.12.6</jjwt.version>
     <bucket4j.version>8.10.1</bucket4j.version>
     <springdoc.version>2.8.3</springdoc.version>
+    <graphql-codegen.version>5.10.0</graphql-codegen.version>
   </properties>
 
   <dependencies>
@@ -156,6 +157,81 @@
           </execution>
         </executions>
       </plugin>
+      <!-- Install git hooks on every mvn validate (runs before compile, test, verify) -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>install-git-hooks</id>
+            <phase>validate</phase>
+            <goals><goal>exec</goal></goals>
+            <configuration>
+              <executable>sh</executable>
+              <arguments>
+                <argument>${project.basedir}/scripts/install-hooks.sh</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- GraphQL SDL codegen: generates Java types from docs/schema.graphql -->
+      <plugin>
+        <groupId>io.github.kobylynskyi</groupId>
+        <artifactId>graphql-codegen-maven-plugin</artifactId>
+        <version>${graphql-codegen.version}</version>
+        <executions>
+          <execution>
+            <goals><goal>generate</goal></goals>
+            <configuration>
+              <graphqlSchemas>
+                <includePattern>docs/schema.graphql</includePattern>
+              </graphqlSchemas>
+              <outputDir>${project.build.directory}/generated-sources/graphql</outputDir>
+              <packageName>com.apibp.events.graphql.model</packageName>
+              <generateApis>false</generateApis>
+              <generateModels>true</generateModels>
+              <modelNameSuffix>Dto</modelNameSuffix>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!-- Run: mvn -Pgenerate-ddl to export Hibernate DDL for the current entities.
+         Output: target/schema.sql — review and copy relevant parts to a new Flyway migration. -->
+    <profile>
+      <id>generate-ddl</id>
+      <properties>
+        <spring.jpa.hibernate.ddl-auto>none</spring.jpa.hibernate.ddl-auto>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>export-ddl</id>
+                <goals><goal>run</goal></goals>
+                <configuration>
+                  <arguments>
+                    <argument>--spring.jpa.hibernate.ddl-auto=create</argument>
+                    <argument>--spring.jpa.properties.javax.persistence.schema-generation.scripts.action=create</argument>
+                    <argument>--spring.jpa.properties.javax.persistence.schema-generation.scripts.create-target=target/schema.sql</argument>
+                    <argument>--spring.datasource.url=jdbc:h2:mem:ddlexport;MODE=PostgreSQL</argument>
+                    <argument>--spring.flyway.enabled=false</argument>
+                  </arguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
