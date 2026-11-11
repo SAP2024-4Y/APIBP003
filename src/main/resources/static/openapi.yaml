@@ -1,0 +1,316 @@
+openapi: "3.1.0"
+info:
+  title: APIBP003 — Events & Ticketing API
+  version: "1.0.0"
+  description: |
+    REST API for the Events & Ticketing platform.
+    Approach A: REST-First + GraphQL Layer.
+
+servers:
+  - url: http://localhost:8080
+    description: Local dev
+
+tags:
+  - name: auth
+  - name: events
+  - name: map
+  - name: calendar
+  - name: bookings
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: health
+      responses:
+        "200":
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+
+  /api/v1/auth/token:
+    post:
+      tags: [auth]
+      summary: Obtain a demo JWT
+      operationId: authToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Token issued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/events:
+    get:
+      tags: [events]
+      summary: List events with filtering, sorting, and cursor pagination
+      operationId: listEvents
+      parameters:
+        - { name: status,     in: query, schema: { type: string } }
+        - { name: category,   in: query, schema: { type: string } }
+        - { name: min_price,  in: query, schema: { type: number } }
+        - { name: max_price,  in: query, schema: { type: number } }
+        - { name: sort,       in: query, schema: { type: string } }
+        - { name: order,      in: query, schema: { type: string, enum: [asc, desc] } }
+        - { name: limit,      in: query, schema: { type: integer, default: 20 } }
+        - { name: after,      in: query, schema: { type: string }, description: "Opaque cursor" }
+      responses:
+        "200":
+          description: Paginated event list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventListResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+
+  /api/v1/events/nearby:
+    get:
+      tags: [map]
+      summary: Find events near a point
+      operationId: eventsNearby
+      parameters:
+        - { name: latitude,   in: query, required: true,  schema: { type: number } }
+        - { name: longitude,  in: query, required: true,  schema: { type: number } }
+        - { name: radius_km,  in: query, required: true,  schema: { type: number } }
+      responses:
+        "200":
+          description: Events within radius
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EventGeo"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /api/v1/events/within:
+    get:
+      tags: [map]
+      summary: Find events in a bounding box
+      operationId: eventsWithin
+      parameters:
+        - { name: min_lat, in: query, required: true, schema: { type: number } }
+        - { name: min_lon, in: query, required: true, schema: { type: number } }
+        - { name: max_lat, in: query, required: true, schema: { type: number } }
+        - { name: max_lon, in: query, required: true, schema: { type: number } }
+      responses:
+        "200":
+          description: Events in bounding box
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EventGeo"
+
+  /api/v1/slots:
+    get:
+      tags: [calendar]
+      summary: Find event slots overlapping a time window
+      operationId: listSlots
+      parameters:
+        - { name: starts_at, in: query, required: true, schema: { type: string, format: date-time }, description: "ISO 8601 UTC" }
+        - { name: ends_at,   in: query, required: true, schema: { type: string, format: date-time }, description: "ISO 8601 UTC" }
+      responses:
+        "200":
+          description: Slots in window
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EventSlot"
+
+  /api/v1/bookings:
+    post:
+      tags: [bookings]
+      summary: Create a booking (auth required)
+      operationId: createBooking
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingRequest"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "422":
+          $ref: "#/components/responses/Unprocessable"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        status: { type: string, example: ok }
+
+    LoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string, example: demo }
+        password: { type: string, example: demo-password }
+
+    TokenResponse:
+      type: object
+      properties:
+        token: { type: string }
+
+    ApiError:
+      type: object
+      properties:
+        code:    { type: string }
+        message: { type: string }
+
+    Event:
+      type: object
+      properties:
+        id:          { type: integer }
+        title:       { type: string }
+        category:    { type: string }
+        status:      { type: string }
+        description: { type: string }
+        venue:       { $ref: "#/components/schemas/Venue" }
+
+    EventGeo:
+      allOf:
+        - $ref: "#/components/schemas/Event"
+        - type: object
+          properties:
+            location:
+              type: object
+              description: "GeoJSON Point — coordinates are [longitude, latitude]"
+              properties:
+                type:        { type: string, example: Point }
+                coordinates: { type: array, items: { type: number }, example: [77.2373, 28.5665] }
+
+    Venue:
+      type: object
+      properties:
+        id:        { type: integer }
+        name:      { type: string }
+        address:   { type: string }
+        latitude:  { type: number }
+        longitude: { type: number }
+
+    EventSlot:
+      type: object
+      properties:
+        id:        { type: integer }
+        event:     { $ref: "#/components/schemas/Event" }
+        starts_at: { type: string, format: date-time }
+        ends_at:   { type: string, format: date-time }
+        capacity:  { type: integer }
+        booked:    { type: integer }
+        available: { type: integer }
+
+    EventListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: "#/components/schemas/Event" }
+        has_more: { type: boolean }
+        next_cursor: { type: string }
+
+    BookingRequest:
+      type: object
+      required: [slot_id, quantity]
+      properties:
+        slot_id:  { type: integer }
+        quantity: { type: integer, minimum: 1 }
+
+    Booking:
+      type: object
+      properties:
+        id:         { type: integer }
+        slot:       { $ref: "#/components/schemas/EventSlot" }
+        quantity:   { type: integer }
+        created_at: { type: string, format: date-time }
+
+  responses:
+    BadRequest:
+      description: Validation error
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+          example: { code: VALIDATION_ERROR, message: "Invalid query parameter" }
+    Unauthorized:
+      description: Missing or invalid token
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+          example: { code: UNAUTHENTICATED, message: "Bearer token required" }
+    Forbidden:
+      description: Insufficient permission
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+          example: { code: FORBIDDEN, message: "Insufficient permission" }
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+          example: { code: EVENT_NOT_FOUND, message: "Event not found" }
+    Conflict:
+      description: Booking conflict or sold out
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+          example: { code: BOOKING_CONFLICT, message: "Slot already booked" }
+    Unprocessable:
+      description: Semantically invalid booking
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+          example: { code: UNPROCESSABLE_BOOKING, message: "Slot is in the past" }
+    RateLimited:
+      description: Too many requests
+      headers:
+        RateLimit-Limit:
+          schema: { type: integer }
+        RateLimit-Remaining:
+          schema: { type: integer }
+        RateLimit-Reset:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+          example: { code: RATE_LIMITED, message: "Too many requests" }

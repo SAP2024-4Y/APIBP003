@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-apibp}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-apibp_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-eventsdb}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-apibp} -d ${POSTGRES_DB:-eventsdb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ghcr.io/sap2024-4y/apibp003:latest
+    # build: .   # uncomment for local build without the pre-pushed image
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-eventsdb}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-apibp}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-apibp_secret}
+      PORT: 8080
+
+volumes:
+  pgdata:

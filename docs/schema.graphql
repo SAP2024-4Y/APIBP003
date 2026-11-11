@@ -1,0 +1,94 @@
+type Query {
+  "List events with filtering, sorting, and cursor pagination."
+  events(
+    status: String
+    category: String
+    min_price: Float
+    max_price: Float
+    sort: String
+    order: String
+    limit: Int
+    after: String
+  ): EventConnection!
+
+  "Find events near a geographic point."
+  eventsNearby(
+    latitude: Float!
+    longitude: Float!
+    radius_km: Float!
+  ): [Event!]!
+
+  "Find events within a bounding box."
+  eventsWithin(
+    min_lat: Float!
+    min_lon: Float!
+    max_lat: Float!
+    max_lon: Float!
+  ): [Event!]!
+
+  "Find event slots overlapping a time window."
+  slots(starts_at: String!, ends_at: String!): [EventSlot!]!
+
+  "Get a single event by id."
+  event(id: ID!): Event @deprecated(reason: "Use events query with id filter instead")
+}
+
+type Mutation {
+  "Create a booking. Requires authentication."
+  createBooking(input: BookingInput!): Booking!
+}
+
+type EventConnection {
+  edges: [EventEdge!]!
+  pageInfo: PageInfo!
+}
+
+type EventEdge {
+  cursor: String!
+  node: Event!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+type Event {
+  id: ID!
+  title: String!
+  category: String!
+  status: String!
+  description: String
+  venue: Venue!
+  slots: [EventSlot!]!
+}
+
+type Venue {
+  id: ID!
+  name: String!
+  address: String
+  latitude: Float!
+  longitude: Float!
+}
+
+type EventSlot {
+  id: ID!
+  event: Event!
+  starts_at: String!
+  ends_at: String!
+  capacity: Int!
+  booked: Int!
+  available: Int!
+}
+
+type Booking {
+  id: ID!
+  slot: EventSlot!
+  quantity: Int!
+  createdAt: String!
+}
+
+input BookingInput {
+  slotId: ID!
+  quantity: Int!
+}
