@@ -193,6 +193,7 @@
               <generateApis>false</generateApis>
               <generateModels>true</generateModels>
               <modelNameSuffix>Dto</modelNameSuffix>
+              <useJakartaValidation>true</useJakartaValidation>
             </configuration>
           </execution>
         </executions>
