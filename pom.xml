@@ -186,6 +186,7 @@
             <goals><goal>generate</goal></goals>
             <configuration>
               <graphqlSchemas>
+                <rootDir>${project.basedir}</rootDir>
                 <includePattern>docs/schema.graphql</includePattern>
               </graphqlSchemas>
               <outputDir>${project.build.directory}/generated-sources/graphql</outputDir>
