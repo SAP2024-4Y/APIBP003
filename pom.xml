@@ -193,7 +193,7 @@
               <generateApis>false</generateApis>
               <generateModels>true</generateModels>
               <modelNameSuffix>Dto</modelNameSuffix>
-              <useJakartaValidation>true</useJakartaValidation>
+              <modelValidationAnnotation>jakarta.validation.constraints.NotNull</modelValidationAnnotation>
             </configuration>
           </execution>
         </executions>
