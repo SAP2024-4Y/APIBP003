@@ -3,7 +3,9 @@ package com.apibp.events;
 import com.apibp.events.dto.EventListResponse;
 import com.apibp.events.model.Event;
 import com.apibp.events.model.TicketType;
+import com.apibp.events.repository.BookingRepository;
 import com.apibp.events.repository.EventRepository;
+import com.apibp.events.repository.EventSlotRepository;
 import com.apibp.events.util.CursorUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,9 +29,13 @@ class EventControllerTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper mapper;
     @Autowired EventRepository eventRepo;
+    @Autowired EventSlotRepository slotRepo;
+    @Autowired BookingRepository bookingRepo;
 
     @BeforeEach
     void seed() {
+        bookingRepo.deleteAll();
+        slotRepo.deleteAll();
         eventRepo.deleteAll();
         for (int i = 1; i <= 10; i++) {
             Event e = new Event();
