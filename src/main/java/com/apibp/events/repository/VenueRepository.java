@@ -13,7 +13,7 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
     @Query(value = """
         SELECT v.* FROM venue v
         WHERE ST_DWithin(v.location,
-              ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography,
+              ST_MakePoint(:lon, :lat)::geography,
               :radiusMetres)
         """, nativeQuery = true)
     List<Venue> findNearby(@Param("lat") double lat,
@@ -22,8 +22,8 @@ public interface VenueRepository extends JpaRepository<Venue, Long> {
 
     @Query(value = """
         SELECT v.* FROM venue v
-        WHERE ST_Within(v.location::geometry,
-              ST_MakeEnvelope(:minLon, :minLat, :maxLon, :maxLat, 4326))
+        WHERE ST_Intersects(v.location,
+              ST_MakeEnvelope(:minLon, :minLat, :maxLon, :maxLat, 4326)::geography)
         """, nativeQuery = true)
     List<Venue> findWithin(@Param("minLat") double minLat,
                            @Param("minLon") double minLon,

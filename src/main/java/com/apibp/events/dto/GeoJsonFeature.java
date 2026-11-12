@@ -1,7 +1,5 @@
 package com.apibp.events.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public record GeoJsonFeature(

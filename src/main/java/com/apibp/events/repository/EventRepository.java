@@ -11,6 +11,6 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long>,
         JpaSpecificationExecutor<Event> {
 
-    @Query("SELECT e FROM Event e WHERE e.venue.id IN :venueIds")
+    @Query("SELECT e FROM Event e JOIN FETCH e.venue WHERE e.venue.id IN :venueIds")
     List<Event> findByVenueIdIn(@Param("venueIds") List<Long> venueIds);
 }

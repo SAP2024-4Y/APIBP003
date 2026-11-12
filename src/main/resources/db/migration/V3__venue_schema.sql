@@ -36,8 +36,7 @@ INSERT INTO venue (name, address, location) VALUES
   ('HITEX Exhibition Centre',    'Kondapur, Hyderabad',                ST_SetSRID(ST_MakePoint(78.3337, 17.4600), 4326)),
   ('Lal Bahadur Stadium',        'Fateh Maidan, Hyderabad',            ST_SetSRID(ST_MakePoint(78.4717, 17.3850), 4326)),
   ('Jawaharlal Nehru Stadium',   'Kochi',                              ST_SetSRID(ST_MakePoint(76.2711, 9.9312),  4326)),
-  ('Brabourne Stadium',          'Marine Lines, Mumbai',               ST_SetSRID(ST_MakePoint(72.8252, 18.9388), 4326))
-ON CONFLICT DO NOTHING;
+  ('Brabourne Stadium',          'Marine Lines, Mumbai',               ST_SetSRID(ST_MakePoint(72.8252, 18.9388), 4326));
 
 -- Link events to venues (round-robin so every event has a non-null venue)
 UPDATE event SET venue_id = (
