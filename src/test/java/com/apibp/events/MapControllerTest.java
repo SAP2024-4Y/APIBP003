@@ -81,6 +81,15 @@ class MapControllerTest {
     void nearby_missingParam_returns400() throws Exception {
         mvc.perform(get("/api/v1/events/nearby")
                 .param("latitude", "28.61"))
-           .andExpect(status().isBadRequest());
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+    }
+
+    @Test
+    void within_missingParam_returns400() throws Exception {
+        mvc.perform(get("/api/v1/events/within")
+                .param("min_lat", "28.5"))
+           .andExpect(status().isBadRequest())
+           .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
     }
 }
