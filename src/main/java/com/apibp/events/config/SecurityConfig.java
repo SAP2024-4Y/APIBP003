@@ -1,6 +1,7 @@
 package com.apibp.events.config;
 
 import com.apibp.events.security.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,13 +17,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-
-    public SecurityConfig(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -32,6 +30,7 @@ public class SecurityConfig {
                     s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/health", "/docs/**", "/openapi.yaml",
+                                 "/swagger-ui/**", "/swagger-ui.html",
                                  "/graphql", "/graphiql/**",
                                  "/api/v1/auth/**",
                                  "/actuator/health").permitAll()
