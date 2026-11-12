@@ -8,6 +8,7 @@ import com.apibp.events.util.CursorUtil;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,10 @@ public class EventService {
         Long afterId = (after != null) ? CursorUtil.decodeId(after) : null;
 
         Specification<Event> spec = buildSpec(status, category, minPrice, maxPrice,
-                                               sortField, asc, afterId, pageSize + 1);
+                                               sortField, asc, afterId);
 
-        List<Event> rows = repo.findAll(spec, Sort.by(asc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField));
+        Sort sortObj = Sort.by(asc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
+        List<Event> rows = repo.findAll(spec, PageRequest.of(0, pageSize + 1, sortObj)).getContent();
 
         boolean hasMore = rows.size() > pageSize;
         List<Event> page = hasMore ? rows.subList(0, pageSize) : rows;
@@ -60,7 +62,7 @@ public class EventService {
             String category,
             BigDecimal minPrice, BigDecimal maxPrice,
             String sortField, boolean asc,
-            Long afterId, int fetchLimit
+            Long afterId
     ) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -90,8 +92,6 @@ public class EventService {
                     ? cb.greaterThan(root.get("id"), afterIdLiteral)
                     : cb.lessThan(root.get("id"), afterIdLiteral));
             }
-
-            query.setMaxResults(fetchLimit);
 
             return cb.and(predicates.toArray(Predicate[]::new));
         };
