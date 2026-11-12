@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS event_slot (
     event_id   BIGINT    NOT NULL REFERENCES event(id),
     starts_at  TIMESTAMPTZ NOT NULL,
     ends_at    TIMESTAMPTZ NOT NULL,
-    capacity   INT       NOT NULL CHECK (capacity > 0)
+    capacity   INT       NOT NULL CHECK (capacity > 0),
+    UNIQUE (event_id, starts_at)
 );
 
 CREATE INDEX IF NOT EXISTS idx_slot_event   ON event_slot (event_id);

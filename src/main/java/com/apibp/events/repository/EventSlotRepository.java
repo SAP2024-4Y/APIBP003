@@ -1,12 +1,15 @@
 package com.apibp.events.repository;
 
 import com.apibp.events.model.EventSlot;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventSlotRepository extends JpaRepository<EventSlot, Long> {
 
@@ -20,4 +23,8 @@ public interface EventSlotRepository extends JpaRepository<EventSlot, Long> {
             """)
     List<EventSlot> findOverlapping(@Param("windowStart") Instant windowStart,
                                     @Param("windowEnd")   Instant windowEnd);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT s FROM EventSlot s WHERE s.id = :id")
+    Optional<EventSlot> findByIdForUpdate(@Param("id") Long id);
 }

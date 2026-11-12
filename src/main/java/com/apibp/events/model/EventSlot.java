@@ -11,7 +11,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "event_slot")
+@Table(name = "event_slot", uniqueConstraints = @UniqueConstraint(columnNames = {"event_id", "starts_at"}))
 public class EventSlot {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

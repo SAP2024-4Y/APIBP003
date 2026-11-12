@@ -35,7 +35,8 @@ public class CalendarService {
 
     @Transactional
     public BookingDto book(Long slotId, String username) {
-        EventSlot slot = slotRepo.findById(slotId)
+        // Load slot with PESSIMISTIC_WRITE lock to prevent race condition
+        EventSlot slot = slotRepo.findByIdForUpdate(slotId)
                 .orElseThrow(() -> new DomainException(
                         ErrorCode.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND,
                         "Slot not found: " + slotId));
@@ -44,6 +45,12 @@ public class CalendarService {
                 .orElseThrow(() -> new DomainException(
                         ErrorCode.UNAUTHENTICATED, HttpStatus.UNAUTHORIZED,
                         "User not found: " + username));
+
+        // Past slot check — run first to return correct error code for expired slots
+        if (slot.getEndsAt().isBefore(Instant.now())) {
+            throw new DomainException(ErrorCode.UNPROCESSABLE_BOOKING, HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Cannot book a past slot");
+        }
 
         // Duplicate booking check
         if (bookingRepo.existsBySlotIdAndUserId(slotId, user.getId())) {
@@ -55,12 +62,6 @@ public class CalendarService {
         if (bookingRepo.countBySlotId(slotId) >= slot.getCapacity()) {
             throw new DomainException(ErrorCode.SLOT_SOLD_OUT, HttpStatus.CONFLICT,
                     "Slot is sold out");
-        }
-
-        // Past slot check
-        if (slot.getEndsAt().isBefore(Instant.now())) {
-            throw new DomainException(ErrorCode.UNPROCESSABLE_BOOKING, HttpStatus.UNPROCESSABLE_ENTITY,
-                    "Cannot book a past slot");
         }
 
         Booking booking = new Booking();
