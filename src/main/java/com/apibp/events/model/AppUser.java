@@ -1,7 +1,11 @@
 package com.apibp.events.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "app_user")
 public class AppUser {
@@ -17,13 +21,4 @@ public class AppUser {
 
     @Column(nullable = false)
     private String role = "USER";
-
-    public Long getId()               { return id; }
-    public String getUsername()       { return username; }
-    public String getPassword()       { return password; }
-    public String getRole()           { return role; }
-    public void setId(Long id)        { this.id = id; }
-    public void setUsername(String u) { this.username = u; }
-    public void setPassword(String p) { this.password = p; }
-    public void setRole(String r)     { this.role = r; }
 }

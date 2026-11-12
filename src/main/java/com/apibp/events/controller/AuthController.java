@@ -6,6 +6,7 @@ import com.apibp.events.repository.AppUserRepository;
 import com.apibp.events.security.JwtUtil;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,17 +16,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final JwtUtil jwtUtil;
     private final PasswordEncoder encoder;
     private final AppUserRepository users;
-
-    public AuthController(JwtUtil jwtUtil, PasswordEncoder encoder, AppUserRepository users) {
-        this.jwtUtil = jwtUtil;
-        this.encoder = encoder;
-        this.users = users;
-    }
 
     record LoginRequest(@NotBlank String username, @NotBlank String password) {}
 

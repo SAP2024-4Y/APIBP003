@@ -1,14 +1,14 @@
 # APIBP003 — Events & Ticketing API
 
-Course: <FILL:course code & name> | Section: <FILL:section> | Instructor: <FILL:instructor>
+Course: API Based Products & SESAPZG504
 
 ## Team Details
 
-| # | Name          | Roll No              | GitHub ID     | Email                    |
-|---|---------------|----------------------|---------------|--------------------------|
-| 1 | Dipto Das     | <FILL:rollno-1>      | 2024sl70039   | <FILL:email-1>           |
-| 2 | Deepak Singh  | <FILL:rollno-2>      | deepaks1507   | <FILL:email-2>           |
-| 3 | Hritam Kar    | <FILL:rollno-3>      | hritamkar     | <FILL:email-3>           |
+| # | Name          | Roll No              | GitHub ID     | Email                                  |
+|---|---------------|----------------------|---------------|--------------------------------------- |
+| 1 | Dipto Das     | 2024sl70039          | 2024sl70039   | 2024sl70039@wilp.bits-pilani.ac.in     |
+| 2 | Deepak Singh  | 2024sl70007          | deepaks1507   | 2024sl70007@wilp.bits-pilani.ac.in     |
+| 3 | Hritam Kar    | 2024sl70029          | hritamkar     | 2024sl70029@wilp.bits-pilani.ac.in     |
 
 - Team ID: `APIBP003` (must equal the repository name and `team.json.team_id`)
 - Chosen Approach: `A` — REST-First + GraphQL Layer (must equal `team.json.approach`)
