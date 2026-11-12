@@ -168,6 +168,7 @@
             <phase>validate</phase>
             <goals><goal>exec</goal></goals>
             <configuration>
+              <skip>${skipGitHooks}</skip>
               <executable>sh</executable>
               <arguments>
                 <argument>${project.basedir}/scripts/install-hooks.sh</argument>
