@@ -5,12 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Map;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    record ApiError(String code, String message) {}
 
     @ExceptionHandler(DomainException.class)
     ResponseEntity<ApiError> handle(DomainException ex) {

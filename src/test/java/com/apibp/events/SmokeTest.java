@@ -50,7 +50,7 @@ class SmokeTest {
         mvc.perform(post("/api/v1/bookings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                    {"slot_id":1,"quantity":1}
+                    {"slotId":1,"quantity":1}
                     """))
            .andExpect(status().isUnauthorized());
     }

@@ -8,3 +8,7 @@ CREATE TABLE IF NOT EXISTS app_user (
     password VARCHAR(255) NOT NULL,
     role     VARCHAR(50)  NOT NULL DEFAULT 'USER'
 );
+
+INSERT INTO app_user (username, password, role)
+VALUES ('demo', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'USER')
+ON CONFLICT (username) DO NOTHING;

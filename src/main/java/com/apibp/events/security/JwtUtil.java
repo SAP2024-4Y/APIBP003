@@ -39,7 +39,7 @@ public class JwtUtil {
         try {
             claims(token);
             return true;
-        } catch (Exception e) {
+        } catch (io.jsonwebtoken.JwtException e) {
             return false;
         }
     }
