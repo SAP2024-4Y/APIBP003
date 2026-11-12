@@ -1,0 +1,16 @@
+package com.apibp.events.exception;
+
+public enum ErrorCode {
+    VALIDATION_ERROR,
+    INVALID_CURSOR,
+    UNAUTHENTICATED,
+    INVALID_CREDENTIALS,
+    FORBIDDEN,
+    EVENT_NOT_FOUND,
+    SLOT_NOT_FOUND,
+    BOOKING_CONFLICT,
+    SLOT_SOLD_OUT,
+    UNPROCESSABLE_BOOKING,
+    RATE_LIMITED,
+    INTERNAL_ERROR
+}

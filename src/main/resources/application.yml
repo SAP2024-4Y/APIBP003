@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/eventsdb}
+    username: ${SPRING_DATASOURCE_USERNAME:apibp}
+    password: ${SPRING_DATASOURCE_PASSWORD:apibp_secret}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        generate_statistics: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  graphql:
+    graphiql:
+      enabled: true
+    schema:
+      locations: classpath:graphql/
+
+server:
+  port: ${PORT:8080}
+
+springdoc:
+  swagger-ui:
+    path: /docs
+    url: /openapi.yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-production-must-be-32-chars-min}
+    expiry-ms: 86400000
+  rate-limit:
+    capacity: 100
+    refill-tokens: 100
+    refill-seconds: 60
