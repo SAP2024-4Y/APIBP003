@@ -7,6 +7,7 @@ RUN mvn dependency:go-offline -B -q
 
 FROM deps AS build
 COPY src ./src
+COPY docs ./docs
 RUN mvn package -Dmaven.test.skip=true -DskipGitHooks=true -B -q
 
 FROM eclipse-temurin:21-jre
