@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.util.HashSet;
 import java.util.Set;
 
+
 @Getter
 @Setter
 @Entity
@@ -26,6 +27,10 @@ public class Event {
     private String status;
 
     private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id")
+    private Venue venue;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<TicketType> ticketTypes = new HashSet<>();
