@@ -116,6 +116,7 @@ class GraphQlControllerTest {
             tt.setName("Ticket " + i);
             tt.setPrice(BigDecimal.TEN);
             e.setTicketTypes(Set.of(tt));
+            eventRepo.save(e);
 
             // Create 2 slots per event
             EventSlot s1 = new EventSlot();
@@ -130,8 +131,7 @@ class GraphQlControllerTest {
             s2.setEndsAt(Instant.parse("2099-12-02T13:00:00Z"));
             s2.setCapacity(10);
 
-            e.setSlots(Set.of(s1, s2));
-            eventRepo.save(e);
+            slotRepo.saveAll(Set.of(s1, s2));
         }
 
         em.flush();
