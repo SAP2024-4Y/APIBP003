@@ -1,7 +1,7 @@
 package com.apibp.events.service;
 
-import com.apibp.events.controller.EventController.EventListResponse;
-import com.apibp.events.controller.EventController.EventDto;
+import com.apibp.events.dto.EventDto;
+import com.apibp.events.dto.EventListResponse;
 import com.apibp.events.model.Event;
 import com.apibp.events.repository.EventRepository;
 import com.apibp.events.util.CursorUtil;
@@ -91,8 +91,7 @@ public class EventService {
                     : cb.lessThan(root.get("id"), afterIdLiteral));
             }
 
-            query.where(predicates.toArray(Predicate[]::new));
-            query.orderBy(asc ? cb.asc(root.get(sortField)) : cb.desc(root.get(sortField)));
+            query.setMaxResults(fetchLimit);
 
             return cb.and(predicates.toArray(Predicate[]::new));
         };

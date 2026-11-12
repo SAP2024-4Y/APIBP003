@@ -1,13 +1,12 @@
 package com.apibp.events.controller;
 
-import com.apibp.events.model.Event;
+import com.apibp.events.dto.EventListResponse;
 import com.apibp.events.service.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/events")
@@ -30,15 +29,4 @@ public class EventController {
         return ResponseEntity.ok(
             service.list(status, category, min_price, max_price, sort, order, limit, after));
     }
-
-    // DTO records — nested here, used by service too
-    public record EventDto(Long id, String title, String category,
-                           String status, String description) {
-        public static EventDto from(Event e) {
-            return new EventDto(e.getId(), e.getTitle(), e.getCategory(),
-                                e.getStatus(), e.getDescription());
-        }
-    }
-
-    public record EventListResponse(List<EventDto> data, boolean has_more, String next_cursor) {}
 }
