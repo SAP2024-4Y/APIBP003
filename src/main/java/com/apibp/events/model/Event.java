@@ -34,4 +34,7 @@ public class Event {
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<TicketType> ticketTypes = new HashSet<>();
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private Set<EventSlot> slots = new HashSet<>();
 }

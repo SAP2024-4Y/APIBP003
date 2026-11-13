@@ -13,4 +13,7 @@ public interface EventRepository extends JpaRepository<Event, Long>,
 
     @Query("SELECT e FROM Event e JOIN FETCH e.venue WHERE e.venue.id IN :venueIds")
     List<Event> findByVenueIdIn(@Param("venueIds") List<Long> venueIds);
+
+    @Query("SELECT DISTINCT e FROM Event e LEFT JOIN FETCH e.slots WHERE e.id IN :ids")
+    List<Event> findByIdsWithSlots(@Param("ids") List<Long> ids);
 }
