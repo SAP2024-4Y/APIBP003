@@ -58,6 +58,7 @@ type Event {
   title: String!
   category: String!
   status: String!
+  base_price: Float!
   description: String
   venue: Venue!
   slots: [EventSlot!]!

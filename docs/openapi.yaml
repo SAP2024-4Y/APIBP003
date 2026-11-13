@@ -205,6 +205,7 @@ components:
         title:       { type: string }
         category:    { type: string }
         status:      { type: string }
+        base_price:  { type: number }
         description: { type: string }
         venue:       { $ref: "#/components/schemas/Venue" }
 
