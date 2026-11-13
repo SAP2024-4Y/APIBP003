@@ -84,13 +84,15 @@ class MapGraphQlTest {
         graphQl.document("""
                 {
                   eventsWithin(min_lat: 28.5, min_lon: 77.1, max_lat: 28.7, max_lon: 77.3) {
-                    id title venue { name }
+                    id title venue { name latitude longitude }
                   }
                 }
                 """)
                 .execute()
                 .errors().verify()
-                .path("eventsWithin[0].title").entity(String.class).isEqualTo("Rock Fest");
+                .path("eventsWithin[0].title").entity(String.class).isEqualTo("Rock Fest")
+                .path("eventsWithin[0].venue.latitude").entity(Double.class).isEqualTo(28.61)
+                .path("eventsWithin[0].venue.longitude").entity(Double.class).isEqualTo(77.20);
     }
 
     @Test
