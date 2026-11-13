@@ -30,6 +30,21 @@ public class MapService {
         return toCollection(venueRepo.findWithin(minLat, minLon, maxLat, maxLon));
     }
 
+    public List<Event> eventsNearby(double lat, double lon, double radiusKm) {
+        List<Long> venueIds = venueRepo.findNearby(lat, lon, radiusKm * 1000)
+                .stream().map(Venue::getId).toList();
+        if (venueIds.isEmpty()) return List.of();
+        return eventRepo.findByVenueIdIn(venueIds);
+    }
+
+    public List<Event> eventsWithin(double minLat, double minLon,
+                                     double maxLat, double maxLon) {
+        List<Long> venueIds = venueRepo.findWithin(minLat, minLon, maxLat, maxLon)
+                .stream().map(Venue::getId).toList();
+        if (venueIds.isEmpty()) return List.of();
+        return eventRepo.findByVenueIdIn(venueIds);
+    }
+
     private GeoJsonFeatureCollection toCollection(List<Venue> venues) {
         if (venues.isEmpty()) return GeoJsonFeatureCollection.of(List.of());
 
