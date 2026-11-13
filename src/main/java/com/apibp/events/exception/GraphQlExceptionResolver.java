@@ -1,6 +1,5 @@
-package com.apibp.events.ratelimit;
+package com.apibp.events.exception;
 
-import com.apibp.events.exception.DomainException;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;

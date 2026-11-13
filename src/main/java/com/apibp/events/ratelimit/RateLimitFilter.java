@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class RateLimitFilter extends OncePerRequestFilter {
@@ -28,17 +29,19 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private final long refillSeconds;
     private final boolean enabled;
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
     public RateLimitFilter(
             @Value("${app.rate-limit.capacity:100}") long capacity,
             @Value("${app.rate-limit.refill-tokens:100}") long refillTokens,
             @Value("${app.rate-limit.refill-seconds:60}") long refillSeconds,
-            @Value("${app.rate-limit.enabled:true}") boolean enabled) {
+            @Value("${app.rate-limit.enabled:true}") boolean enabled,
+            ObjectMapper mapper) {
         this.capacity = capacity;
         this.refillTokens = refillTokens;
         this.refillSeconds = refillSeconds;
         this.enabled = enabled;
+        this.mapper = mapper;
     }
 
     @Override
@@ -55,7 +58,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         var probe = bucket.tryConsumeAndReturnRemaining(1);
         long remaining = probe.getRemainingTokens();
-        long resetEpochSeconds = System.currentTimeMillis() / 1000 + refillSeconds;
+        long resetEpochSeconds = System.currentTimeMillis() / 1000
+                + TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill());
 
         res.setHeader("RateLimit-Limit", String.valueOf(capacity));
         res.setHeader("RateLimit-Remaining", String.valueOf(Math.max(0, remaining)));
