@@ -23,3 +23,8 @@ app:
   jwt:
     secret: test-secret-must-be-at-least-32-characters-long
     expiry-ms: 86400000
+  rate-limit:
+    enabled: false
+    capacity: 3
+    refill-tokens: 3
+    refill-seconds: 60
