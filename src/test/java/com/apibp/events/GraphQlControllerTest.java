@@ -11,6 +11,8 @@ import com.apibp.events.repository.EventSlotRepository;
 import com.apibp.events.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureGraphQlTester;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -153,7 +155,7 @@ class GraphQlControllerTest {
         long queriesPage10 = stats.getPrepareStatementCount();
 
         // Assert query count is constant (both should be 2: 1 for pagination + 1 batch load slots)
-        assert queriesPage5 == queriesPage10 :
-            "N+1 detected! Page size 5 ran " + queriesPage5 + " queries, size 10 ran " + queriesPage10;
+        assertEquals(queriesPage5, queriesPage10,
+                "N+1 detected! Page size 5 ran " + queriesPage5 + " queries, size 10 ran " + queriesPage10);
     }
 }

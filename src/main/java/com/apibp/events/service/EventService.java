@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -51,12 +52,6 @@ public class EventService {
         boolean hasMore = rows.size() > pageSize;
         List<Event> page = hasMore ? rows.subList(0, pageSize) : rows;
 
-        // Uses WHERE e.id IN :ids pattern, no two-collection JOIN to prevent MultipleBagFetchException
-        List<Long> pageIds = page.stream().map(Event::getId).toList();
-        if (!pageIds.isEmpty()) {
-            repo.findByIdsWithSlots(pageIds);
-        }
-
         List<EventDto> dtos = page.stream().map(EventDto::from).toList();
         String nextCursor = hasMore ? CursorUtil.encode(sortField, page.getLast().getId()) : null;
 
@@ -85,10 +80,12 @@ public class EventService {
         Sort sortObj = Sort.by(asc ? Sort.Direction.ASC : Sort.Direction.DESC, sortField);
         List<Event> rows = repo.findAll(spec, PageRequest.of(0, pageSize + 1, sortObj)).getContent();
 
-        // Batch-load slots for all events to avoid N+1
+        // Batch-load slots for all events to avoid N+1; re-index by id to preserve sort order
         List<Long> allIds = rows.stream().map(Event::getId).toList();
         if (!allIds.isEmpty()) {
-            repo.findByIdsWithSlots(allIds);
+            Map<Long, Event> withSlots = repo.findByIdsWithSlots(allIds)
+                    .stream().collect(java.util.stream.Collectors.toMap(Event::getId, e -> e));
+            return allIds.stream().map(withSlots::get).toList();
         }
 
         return rows;
