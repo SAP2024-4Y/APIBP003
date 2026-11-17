@@ -1,6 +1,6 @@
 # APIBP003 — Events & Ticketing API
 
-Course: API Based Products & SESAPZG504
+Course: SESAPZG504 — API Based Products | Section: <section> | Instructor: <instructor>
 
 ## Team Details
 
