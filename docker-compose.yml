@@ -14,8 +14,7 @@ services:
       retries: 10
 
   app:
-    image: ghcr.io/sap2024-4y/apibp003:latest
-    # build: .   # uncomment for local build without the pre-pushed image
+    image: dipto15/apibp003:latest
     ports:
       - "8080:8080"
     depends_on:
