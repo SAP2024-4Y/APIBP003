@@ -32,6 +32,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/health", "/docs/**", "/openapi.yaml",
                                  "/swagger-ui/**", "/swagger-ui.html",
+                                 "/v3/api-docs/**",
                                  "/graphql", "/graphiql/**",
                                  "/api/v1/auth/**",
                                  "/actuator/health").permitAll()
