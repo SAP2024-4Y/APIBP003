@@ -1,3 +1,3 @@
 package com.apibp.events.dto;
 
-public record BookingRequest(Long slotId) {}
+public record BookingRequest(Long slotId, int quantity) {}

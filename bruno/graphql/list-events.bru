@@ -1,0 +1,39 @@
+meta {
+  name: GraphQL - List Events
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/graphql
+  body: graphql
+  auth: none
+}
+
+body:graphql {
+  query {
+    events(status: "ON_SALE", limit: 5) {
+      edges {
+        cursor
+        node {
+          id
+          title
+          category
+          status
+          base_price
+          venue {
+            id
+            name
+            address
+            latitude
+            longitude
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

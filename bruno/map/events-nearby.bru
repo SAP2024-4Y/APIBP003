@@ -1,0 +1,17 @@
+meta {
+  name: Events Nearby
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/v1/events/nearby
+  body: none
+  auth: none
+}
+
+params:query {
+  latitude: 28.5665
+  longitude: 77.2373
+  radius_km: 10
+}

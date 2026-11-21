@@ -1,0 +1,28 @@
+meta {
+  name: GraphQL - Events Within Bounding Box
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/graphql
+  body: graphql
+  auth: none
+}
+
+body:graphql {
+  query {
+    eventsWithin(min_lat: 28.4, min_lon: 76.9, max_lat: 28.9, max_lon: 77.5) {
+      id
+      title
+      category
+      status
+      base_price
+      venue {
+        name
+        latitude
+        longitude
+      }
+    }
+  }
+}

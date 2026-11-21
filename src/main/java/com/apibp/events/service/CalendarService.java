@@ -33,9 +33,21 @@ public class CalendarService {
                        .toList();
     }
 
+    public List<EventSlot> listSlotEntities(Instant windowStart, Instant windowEnd) {
+        return slotRepo.findOverlapping(windowStart, windowEnd);
+    }
+
     @Transactional
-    public BookingDto book(Long slotId, String username) {
-        // Load slot with PESSIMISTIC_WRITE lock to prevent race condition
+    public BookingDto book(Long slotId, int quantity, String username) {
+        return BookingDto.from(doBook(slotId, quantity, username));
+    }
+
+    @Transactional
+    public Booking bookEntity(Long slotId, int quantity, String username) {
+        return doBook(slotId, quantity, username);
+    }
+
+    private Booking doBook(Long slotId, int quantity, String username) {
         EventSlot slot = slotRepo.findByIdForUpdate(slotId)
                 .orElseThrow(() -> new DomainException(
                         ErrorCode.SLOT_NOT_FOUND, HttpStatus.NOT_FOUND,
@@ -46,20 +58,17 @@ public class CalendarService {
                         ErrorCode.UNAUTHENTICATED, HttpStatus.UNAUTHORIZED,
                         "User not found: " + username));
 
-        // Past slot check — run first to return correct error code for expired slots
         if (slot.getEndsAt().isBefore(Instant.now())) {
             throw new DomainException(ErrorCode.UNPROCESSABLE_BOOKING, HttpStatus.UNPROCESSABLE_ENTITY,
                     "Cannot book a past slot");
         }
 
-        // Duplicate booking check
         if (bookingRepo.existsBySlotIdAndUserId(slotId, user.getId())) {
             throw new DomainException(ErrorCode.BOOKING_CONFLICT, HttpStatus.CONFLICT,
                     "Already booked this slot");
         }
 
-        // Capacity check
-        if (bookingRepo.countBySlotId(slotId) >= slot.getCapacity()) {
+        if (bookingRepo.countBySlotId(slotId) + quantity > slot.getCapacity()) {
             throw new DomainException(ErrorCode.SLOT_SOLD_OUT, HttpStatus.CONFLICT,
                     "Slot is sold out");
         }
@@ -67,7 +76,8 @@ public class CalendarService {
         Booking booking = new Booking();
         booking.setSlot(slot);
         booking.setUser(user);
+        booking.setQuantity(quantity);
         booking.setBookedAt(Instant.now());
-        return BookingDto.from(bookingRepo.save(booking));
+        return bookingRepo.save(booking);
     }
 }

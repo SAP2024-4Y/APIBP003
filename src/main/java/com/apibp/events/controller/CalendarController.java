@@ -45,7 +45,7 @@ public class CalendarController {
             @RequestBody BookingRequest req,
             Authentication auth) {
 
-        BookingDto dto = service.book(req.slotId(), auth.getName());
+        BookingDto dto = service.book(req.slotId(), req.quantity(), auth.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 

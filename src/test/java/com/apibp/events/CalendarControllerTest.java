@@ -131,7 +131,7 @@ class CalendarControllerTest {
         var result = mvc.perform(post("/api/v1/bookings")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new BookingRequest(slot.getId()))))
+                        .content(mapper.writeValueAsString(new BookingRequest(slot.getId(), 1))))
                 .andExpect(status().isCreated())
                 .andReturn();
 
@@ -142,7 +142,7 @@ class CalendarControllerTest {
 
     @Test
     void createBooking_duplicate_returns409Conflict() throws Exception {
-        String body = mapper.writeValueAsString(new BookingRequest(slot.getId()));
+        String body = mapper.writeValueAsString(new BookingRequest(slot.getId(), 1));
         // First booking succeeds
         mvc.perform(post("/api/v1/bookings")
                         .header("Authorization", "Bearer " + token)
@@ -170,7 +170,7 @@ class CalendarControllerTest {
             return userRepo.save(u);
         });
         String token2 = jwt.generate(other.getUsername());
-        String body = mapper.writeValueAsString(new BookingRequest(slot.getId()));
+        String body = mapper.writeValueAsString(new BookingRequest(slot.getId(), 1));
 
         mvc.perform(post("/api/v1/bookings")
                         .header("Authorization", "Bearer " + token)
@@ -200,7 +200,7 @@ class CalendarControllerTest {
     void createBooking_noAuth_returns401() throws Exception {
         mvc.perform(post("/api/v1/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new BookingRequest(slot.getId()))))
+                        .content(mapper.writeValueAsString(new BookingRequest(slot.getId(), 1))))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -209,7 +209,7 @@ class CalendarControllerTest {
         mvc.perform(post("/api/v1/bookings")
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(new BookingRequest(999999L))))
+                        .content(mapper.writeValueAsString(new BookingRequest(999999L, 1))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("SLOT_NOT_FOUND"));
     }

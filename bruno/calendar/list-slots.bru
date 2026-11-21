@@ -1,0 +1,16 @@
+meta {
+  name: List Slots in Window
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/v1/slots
+  body: none
+  auth: none
+}
+
+params:query {
+  starts_at: 2026-12-01T00:00:00Z
+  ends_at: 2026-12-31T23:59:59Z
+}

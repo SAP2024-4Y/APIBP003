@@ -1,7 +1,6 @@
 package com.apibp.events.controller;
 
-import com.apibp.events.dto.BookingDto;
-import com.apibp.events.dto.SlotDto;
+import com.apibp.events.model.Booking;
 import com.apibp.events.exception.DomainException;
 import com.apibp.events.exception.ErrorCode;
 import com.apibp.events.model.Event;
@@ -69,14 +68,14 @@ public class GraphQlController {
     }
 
     @QueryMapping
-    public List<SlotDto> slots(
+    public List<EventSlot> slots(
             @Argument(name = "starts_at") String startsAt,
             @Argument(name = "ends_at") String endsAt) {
 
         Instant windowStart = parseInstant(startsAt);
         Instant windowEnd = parseInstant(endsAt);
 
-        return calendarService.listSlots(windowStart, windowEnd);
+        return calendarService.listSlotEntities(windowStart, windowEnd);
     }
 
     @QueryMapping
@@ -87,11 +86,26 @@ public class GraphQlController {
 
     @MutationMapping
     @PreAuthorize("isAuthenticated()")
-    public BookingDto createBooking(
+    public Booking createBooking(
             @Argument(name = "input") BookingInputPayload input,
             Authentication auth) {
 
-        return calendarService.book(input.slotId(), auth.getName());
+        return calendarService.bookEntity(input.slotId(), input.quantity() != null ? input.quantity() : 1, auth.getName());
+    }
+
+    @SchemaMapping(typeName = "EventSlot", field = "starts_at")
+    public String slotStartsAt(EventSlot slot) {
+        return slot.getStartsAt().toString();
+    }
+
+    @SchemaMapping(typeName = "EventSlot", field = "ends_at")
+    public String slotEndsAt(EventSlot slot) {
+        return slot.getEndsAt().toString();
+    }
+
+    @SchemaMapping(typeName = "Booking", field = "createdAt")
+    public String bookingCreatedAt(Booking booking) {
+        return booking.getBookedAt().toString();
     }
 
     @SchemaMapping(typeName = "EventSlot", field = "booked")

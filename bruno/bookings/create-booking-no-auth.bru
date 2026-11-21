@@ -1,0 +1,18 @@
+meta {
+  name: Create Booking - No Auth (expect 401)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/v1/bookings
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "slot_id": 1,
+    "quantity": 1
+  }
+}

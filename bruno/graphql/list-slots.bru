@@ -1,0 +1,32 @@
+meta {
+  name: GraphQL - List Slots
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/graphql
+  body: graphql
+  auth: none
+}
+
+body:graphql {
+  query {
+    slots(starts_at: "2026-12-01T00:00:00Z", ends_at: "2026-12-31T23:59:59Z") {
+      id
+      starts_at
+      ends_at
+      capacity
+      booked
+      available
+      event {
+        id
+        title
+        category
+        venue {
+          name
+        }
+      }
+    }
+  }
+}

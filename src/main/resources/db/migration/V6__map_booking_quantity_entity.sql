@@ -1,0 +1,2 @@
+-- No DDL change: quantity column already added in V5.
+-- This migration maps the existing column to the Booking JPA entity.

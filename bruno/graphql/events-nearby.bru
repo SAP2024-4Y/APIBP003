@@ -1,0 +1,29 @@
+meta {
+  name: GraphQL - Events Nearby
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/graphql
+  body: graphql
+  auth: none
+}
+
+body:graphql {
+  query {
+    eventsNearby(latitude: 28.5665, longitude: 77.2373, radius_km: 10) {
+      id
+      title
+      category
+      status
+      base_price
+      venue {
+        name
+        address
+        latitude
+        longitude
+      }
+    }
+  }
+}

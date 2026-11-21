@@ -1,0 +1,16 @@
+meta {
+  name: List Events - Paginate with Cursor
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/api/v1/events
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 5
+  after: {{next_cursor}}
+}

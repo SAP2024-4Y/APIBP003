@@ -1,0 +1,22 @@
+meta {
+  name: List Events
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/v1/events
+  body: none
+  auth: none
+}
+
+params:query {
+  status: ON_SALE
+  ~category: MUSIC
+  ~min_price: 10
+  ~max_price: 500
+  ~sort: base_price
+  ~order: asc
+  ~limit: 20
+  ~after:
+}
