@@ -23,6 +23,9 @@ public class Booking {
     @JoinColumn(name = "user_id", nullable = false)
     private AppUser user;
 
+    @Column(name = "quantity", nullable = false)
+    private int quantity = 1;
+
     @Column(name = "booked_at", nullable = false)
     private Instant bookedAt;
 }

@@ -1,0 +1,18 @@
+meta {
+  name: Events Within Bounding Box
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/v1/events/within
+  body: none
+  auth: none
+}
+
+params:query {
+  min_lat: 28.4
+  min_lon: 76.9
+  max_lat: 28.9
+  max_lon: 77.5
+}

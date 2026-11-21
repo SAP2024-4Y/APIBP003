@@ -1,0 +1,19 @@
+meta {
+  name: List Events - Price Range
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/api/v1/events
+  body: none
+  auth: none
+}
+
+params:query {
+  min_price: 100
+  max_price: 500
+  sort: base_price
+  order: desc
+  limit: 10
+}

@@ -1,0 +1,26 @@
+meta {
+  name: GraphQL - Deprecated event query
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{base_url}}/graphql
+  body: graphql
+  auth: none
+}
+
+body:graphql {
+  query {
+    event(id: "1") {
+      id
+      title
+      category
+      status
+      base_price
+      venue {
+        name
+      }
+    }
+  }
+}
